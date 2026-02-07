@@ -52,10 +52,7 @@ export function useScores() {
         i === holeIndex
           ? {
             ...hole,
-            [player]: Math.max(
-              0,
-              (hole[player] ?? 0) + delta
-            ),
+            [player]: (hole[player] ?? 0) + delta,
           }
           : hole
       )

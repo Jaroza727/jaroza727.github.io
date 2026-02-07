@@ -16,6 +16,7 @@ type HoleSlideProps = {
 };
 
 type DotType = "drive" | "on" | "in";
+type ActionType = DotType | "bonus" | "penalty";
 
 export default function HoleSlide({
   holeIndex,
@@ -25,9 +26,8 @@ export default function HoleSlide({
   totalScores,
   onScoreChange,
 }: HoleSlideProps) {
-  const [activeDot, setActiveDot] = useState<DotType | null>(
-    null
-  );
+  const [activeAction, setActiveAction] =
+    useState<ActionType | null>(null);
   const [dotAssignments, setDotAssignments] = useState<
     Record<DotType, string | null>
   >({
@@ -35,6 +35,12 @@ export default function HoleSlide({
     on: null,
     in: null,
   });
+  const [bonusAssignees, setBonusAssignees] = useState<
+    Record<string, number>
+  >({});
+  const [penaltyAssignees, setPenaltyAssignees] = useState<
+    Record<string, number>
+  >({});
 
   useEffect(() => {
     setDotAssignments((prev) => {
@@ -53,6 +59,24 @@ export default function HoleSlide({
       );
       return changed ? next : prev;
     });
+    setBonusAssignees((prev) => {
+      const next = { ...prev };
+      Object.keys(next).forEach((name) => {
+        if (!players.includes(name)) {
+          delete next[name];
+        }
+      });
+      return next;
+    });
+    setPenaltyAssignees((prev) => {
+      const next = { ...prev };
+      Object.keys(next).forEach((name) => {
+        if (!players.includes(name)) {
+          delete next[name];
+        }
+      });
+      return next;
+    });
   }, [players]);
 
   useEffect(() => {
@@ -66,21 +90,73 @@ export default function HoleSlide({
         on: null,
         in: null,
       });
+      setBonusAssignees({});
+      setPenaltyAssignees({});
     }
   }, [hole, players]);
 
-  const openPicker = (dot: DotType) => {
-    setActiveDot(dot);
+  const openPicker = (action: ActionType) => {
+    setActiveAction(action);
   };
 
   const closePicker = () => {
-    setActiveDot(null);
+    setActiveAction(null);
   };
 
   const handleSelectPlayer = (player: string) => {
-    if (!activeDot) return;
+    if (!activeAction) return;
 
-    const previousPlayer = dotAssignments[activeDot];
+    if (activeAction === "bonus") {
+      const current = bonusAssignees[player] ?? 0;
+      if (current > 0) {
+        onScoreChange(holeIndex, player, -1);
+        setBonusAssignees((prev) => {
+          const next = { ...prev };
+          const updated = (next[player] ?? 0) - 1;
+          if (updated <= 0) {
+            delete next[player];
+          } else {
+            next[player] = updated;
+          }
+          return next;
+        });
+      } else {
+        onScoreChange(holeIndex, player, 1);
+        setBonusAssignees((prev) => ({
+          ...prev,
+          [player]: 1,
+        }));
+      }
+      setActiveAction(null);
+      return;
+    }
+
+    if (activeAction === "penalty") {
+      const current = penaltyAssignees[player] ?? 0;
+      if (current > 0) {
+        onScoreChange(holeIndex, player, 1);
+        setPenaltyAssignees((prev) => {
+          const next = { ...prev };
+          const updated = (next[player] ?? 0) - 1;
+          if (updated <= 0) {
+            delete next[player];
+          } else {
+            next[player] = updated;
+          }
+          return next;
+        });
+      } else {
+        onScoreChange(holeIndex, player, -1);
+        setPenaltyAssignees((prev) => ({
+          ...prev,
+          [player]: 1,
+        }));
+      }
+      setActiveAction(null);
+      return;
+    }
+
+    const previousPlayer = dotAssignments[activeAction];
     if (previousPlayer && previousPlayer !== player) {
       onScoreChange(holeIndex, previousPlayer, -1);
     }
@@ -91,16 +167,24 @@ export default function HoleSlide({
 
     setDotAssignments((prev) => ({
       ...prev,
-      [activeDot]: player,
+      [activeAction]: player,
     }));
 
-    setActiveDot(null);
+    setActiveAction(null);
   };
 
   const getDotLabel = (dot: DotType) => {
     if (dot === "drive") return "Who got drive?";
     if (dot === "on") return "Who was first on?";
     return "Who was first in?";
+  };
+
+  const getActionLabel = (action: ActionType) => {
+    if (action === "bonus")
+      return "Who got V dot? (tap again to remove)";
+    if (action === "penalty")
+      return "Who took a penalty? (tap again to remove)";
+    return getDotLabel(action);
   };
 
   const getDotValue = (dot: DotType) =>
@@ -112,6 +196,27 @@ export default function HoleSlide({
     if (diff !== 0) return diff;
     return a.localeCompare(b);
   });
+
+  const renderAssignees = (assignees: Record<string, number>) => {
+    const entries = Object.entries(assignees);
+    if (entries.length === 0) {
+      return (
+        <span className="dot-button__value dot-button__value--small">
+          Unassigned
+        </span>
+      );
+    }
+    return (
+      <span className="dot-assignee-list">
+        {entries.map(([name, count]) => (
+          <span key={name} className="dot-assignee-chip">
+            {name}
+            {count > 1 ? ` x${count}` : ""}
+          </span>
+        ))}
+      </span>
+    );
+  };
 
   return (
     <div className="keen-slider__slide score-slide">
@@ -157,6 +262,23 @@ export default function HoleSlide({
         </button>
       </div>
 
+      <div className="dot-button-row">
+        <button
+          className="dot-button dot-button--bonus dot-button--small"
+          onClick={() => openPicker("bonus")}
+        >
+          + V Dot
+          {renderAssignees(bonusAssignees)}
+        </button>
+        <button
+          className="dot-button dot-button--penalty dot-button--small"
+          onClick={() => openPicker("penalty")}
+        >
+          - Penalty
+          {renderAssignees(penaltyAssignees)}
+        </button>
+      </div>
+
       <div className="hole-scoreboard">
         <div className="hole-scoreboard__title">
           Total scores
@@ -182,12 +304,12 @@ export default function HoleSlide({
       </div>
 
       <Modal
-        isOpen={activeDot !== null}
+        isOpen={activeAction !== null}
         onClose={closePicker}
         title="Select Player"
       >
         <p className="dot-modal-prompt">
-          {activeDot ? getDotLabel(activeDot) : ""}
+          {activeAction ? getActionLabel(activeAction) : ""}
         </p>
         <div className="dot-player-list">
           {players.map((player) => (

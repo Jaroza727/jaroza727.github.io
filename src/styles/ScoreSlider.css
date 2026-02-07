@@ -104,6 +104,57 @@
   background: linear-gradient(135deg, #34d399, #10b981);
 }
 
+.dot-button-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.dot-button--small {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dot-button__value--small {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.22);
+}
+
+.dot-assignee-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dot-assignee-chip {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.22);
+}
+
+.dot-button--bonus {
+  background: linear-gradient(135deg, #f472b6, #ec4899);
+  color: #111827;
+}
+
+.dot-button--penalty {
+  background: linear-gradient(135deg, #fb7185, #ef4444);
+  color: #111827;
+}
+
+
 .dot-modal-prompt {
   margin: 0 0 12px;
   color: #e5e7eb;
