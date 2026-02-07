@@ -2,9 +2,7 @@ import { HoleScores } from "../types/game";
 
 export const DOTS_PER_HOLE = 3;
 
-export const getTotalDots = (
-  holeScores: HoleScores
-) =>
+export const getTotalDots = (holeScores: HoleScores) =>
   Object.values(holeScores).reduce(
     (sum, dots) => sum + dots,
     0

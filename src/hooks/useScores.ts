@@ -15,10 +15,18 @@ const reconcileScores = (
   players: string[]
 ): GameScores =>
   Array.from({ length: holes }, (_, holeIndex) => {
-    const prevHole = prevScores[holeIndex] ?? {};
-    return Object.fromEntries(
-      players.map((p) => [p, prevHole[p] ?? 0])
-    );
+    const prevHole = prevScores[holeIndex];
+
+    const nextHole: Record<string, number> = {};
+
+    for (const player of players) {
+      nextHole[player] =
+        prevHole && typeof prevHole[player] === "number"
+          ? prevHole[player]
+          : 0;
+    }
+
+    return nextHole;
   });
 
 export function useScores() {
@@ -43,12 +51,12 @@ export function useScores() {
       prev.map((hole, i) =>
         i === holeIndex
           ? {
-              ...hole,
-              [player]: Math.max(
-                0,
-                hole[player] + delta
-              ),
-            }
+            ...hole,
+            [player]: Math.max(
+              0,
+              (hole[player] ?? 0) + delta
+            ),
+          }
           : hole
       )
     );

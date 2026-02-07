@@ -43,8 +43,6 @@ export default function GameSettingsContent(props : GameSettingsContentProps) {
     setPlayers((p) => p.filter((_, i) => i !== index));
   };
 
-  const payload = { holes, players };
-
   return (
     <>
       <label className="modal-label">

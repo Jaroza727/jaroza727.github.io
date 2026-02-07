@@ -9,6 +9,8 @@ import "../styles/ScoreSlider.css";
 type ScoreSliderProps = {
   players: string[];
   scores: GameScores;
+  currentHole: number;
+  onHoleChange: (index: number) => void;
   onScoreChange: (
     holeIndex: number,
     player: string,
@@ -17,61 +19,69 @@ type ScoreSliderProps = {
 };
 
 export default function ScoreSlider({
-  players,
-  scores,
-  onScoreChange,
+    players,
+    scores,
+    currentHole,
+    onHoleChange,
+    onScoreChange,
 }: ScoreSliderProps) {
-  const [currentSlide, setCurrentSlide] = useState(0);
+    const [currentSlide, setCurrentSlide] = useState(0);
 
-  const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
-    initial: 0,
-    slides: { perView: 1 },
-    slideChanged(s) {
-      setCurrentSlide(s.track.details.rel);
-    },
-  });
+    const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
+            initial: currentHole,
+            slides: { perView: 1 },
+            slideChanged(s) {
+                onHoleChange(s.track.details.rel);
+            },
+        });
 
-  useEffect(() => {
-    slider.current?.update();
-  }, [scores.length]);
+    useEffect(() => {
+        if (!slider) return;
+        slider.current?.update();
+    }, [slider, scores.length]);
 
-  useEffect(() => {
-    if (currentSlide >= scores.length) {
-      slider.current?.moveToIdx(scores.length - 1);
-    }
-  }, [scores.length, currentSlide]);
+    useEffect(() => {
+        if (!slider) return;
 
-  return (
-    <div className="score-slider-wrapper">
-      <div ref={sliderRef} className="keen-slider">
-        {scores.map((hole, index) => (
-          <HoleSlide
-            key={index}
-            holeIndex={index}
-            totalHoles={scores.length}
-            hole={hole}
-            players={players}
-            onScoreChange={onScoreChange}
-          />
-        ))}
-      </div>
+        const clamped =
+            Math.min(currentHole, scores.length - 1);
 
-      <div className="hole-thumbnails-outer">
-        <div className="hole-thumbnails">
-          {scores.map((hole, index) => (
-            <HoleThumbnail
-              key={index}
-              index={index}
-              hole={hole}
-              isActive={currentSlide === index}
-              isComplete={isHoleComplete(hole)}
-              onClick={(i) =>
-                slider.current?.moveToIdx(i)
-              }
-            />
-          ))}
+        slider.current?.moveToIdx(clamped);
+        }, [slider, currentHole, scores.length]);
+
+    return (
+        <div className="score-slider-wrapper">
+            <div
+                key={`${scores.length}-${players.join(",")}`}
+                ref={sliderRef}
+                className="keen-slider"
+            >
+                {scores.map((hole, index) => (
+                    <HoleSlide
+                        key={index}
+                        holeIndex={index}
+                        totalHoles={scores.length}
+                        hole={hole}
+                        players={players}
+                        onScoreChange={onScoreChange}
+                    />
+                ))}
+            </div>
+
+            <div className="hole-thumbnails-outer">
+                <div className="hole-thumbnails">
+                    {scores.map((hole, index) => (
+                        <HoleThumbnail
+                        key={index}
+                        index={index}
+                        hole={hole}
+                        isActive={currentHole === index}
+                        isComplete={isHoleComplete(hole)}
+                        onClick={onHoleChange}
+                        />
+                    ))}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

@@ -3,27 +3,15 @@ import Header from './components/Header';
 import Modal from './components/Modal';
 import GameSettingsContent, { GameSetupData } from './components/GameSettingsContent';
 import ScoreSlider from './components/ScoreSlider';
-import { GameScores } from "./types/game";
 import { useScores } from './hooks/useScores';
 import './App.css';
 import "keen-slider/keen-slider.min.css";
-
-const reconcileScores = (
-  prevScores: GameScores,
-  holes: number,
-  players: string[]
-): GameScores =>
-  Array.from({ length: holes }, (_, holeIndex) => {
-    const prevHole = prevScores[holeIndex] ?? {};
-    return Object.fromEntries(
-      players.map((p) => [p, prevHole[p] ?? 0])
-    );
-  });
 
 export default function App() {
   const [gameSetup, setGameSetup] = useState<GameSetupData | null>(null);
   const [isHowToPlayOpen, setIsHowToPlayOpen] = useState(false);
   const [isGameSettingsOpen, setIsGameSettingsOpen] = useState(false);
+  const [currentHole, setCurrentHole] = useState(0);
 
   const { scores, startNewGame, updateGame, changeScore} = useScores();
 
@@ -77,8 +65,11 @@ export default function App() {
       {gameSetup && scores.length > 0 && (
         <main>
           <ScoreSlider
+            key={gameSetup.players.join("|")}
             players={gameSetup.players}
             scores={scores}
+            currentHole={currentHole}
+            onHoleChange={setCurrentHole}
             onScoreChange={changeScore}
           />
         </main>
