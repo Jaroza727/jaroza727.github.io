@@ -27,6 +27,7 @@ export default function HoleThumbnail({
     <button
       className={className}
       onClick={() => onClick(index)}
+      data-keen-slider-clickable="true"
     >
       {index + 1}
     </button>

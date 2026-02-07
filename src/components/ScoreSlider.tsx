@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useKeenSlider } from "keen-slider/react";
 import { GameScores } from "../types/game";
 import HoleSlide from "./HoleSlide";
@@ -7,15 +7,15 @@ import { isHoleComplete } from "../rules/dots";
 import "../styles/ScoreSlider.css";
 
 type ScoreSliderProps = {
-  players: string[];
-  scores: GameScores;
-  currentHole: number;
-  onHoleChange: (index: number) => void;
-  onScoreChange: (
-    holeIndex: number,
-    player: string,
-    delta: number
-  ) => void;
+    players: string[];
+    scores: GameScores;
+    currentHole: number;
+    onHoleChange: (index: number) => void;
+    onScoreChange: (
+        holeIndex: number,
+        player: string,
+        delta: number
+    ) => void;
 };
 
 export default function ScoreSlider({
@@ -25,15 +25,13 @@ export default function ScoreSlider({
     onHoleChange,
     onScoreChange,
 }: ScoreSliderProps) {
-    const [currentSlide, setCurrentSlide] = useState(0);
-
     const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
-            initial: currentHole,
-            slides: { perView: 1 },
-            slideChanged(s) {
-                onHoleChange(s.track.details.rel);
-            },
-        });
+        initial: currentHole,
+        slides: { perView: 1 },
+        slideChanged(s) {
+            onHoleChange(s.track.details.rel);
+        },
+    });
 
     useEffect(() => {
         if (!slider) return;
@@ -47,12 +45,15 @@ export default function ScoreSlider({
             Math.min(currentHole, scores.length - 1);
 
         slider.current?.moveToIdx(clamped);
-        }, [slider, currentHole, scores.length]);
+    }, [slider, currentHole, scores.length]);
+
+    const handleJumpToHole = (index: number) => {
+        slider.current?.moveToIdx(index, true, { duration: 0 });
+    };
 
     return (
         <div className="score-slider-wrapper">
             <div
-                key={`${scores.length}-${players.join(",")}`}
                 ref={sliderRef}
                 className="keen-slider"
             >
@@ -72,12 +73,12 @@ export default function ScoreSlider({
                 <div className="hole-thumbnails">
                     {scores.map((hole, index) => (
                         <HoleThumbnail
-                        key={index}
-                        index={index}
-                        hole={hole}
-                        isActive={currentHole === index}
-                        isComplete={isHoleComplete(hole)}
-                        onClick={onHoleChange}
+                            key={index}
+                            index={index}
+                            hole={hole}
+                            isActive={currentHole === index}
+                            isComplete={isHoleComplete(hole)}
+                            onClick={handleJumpToHole}
                         />
                     ))}
                 </div>
