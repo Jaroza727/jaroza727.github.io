@@ -1,0 +1,43 @@
+:root {
+  --kebab-dot-color: rgb(206, 206, 206);
+  --kebab-bg: #282b31;
+  --kebab-border: #e5e7eb;
+}
+
+.kebab-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.kebab-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--kebab-dot-color);
+}
+
+.kebab-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 4px;
+  background-color: var(--kebab-bg);
+  border: 1px solid var(--kebab-border);
+  border-radius: 6px;
+  min-width: 140px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+
+.kebab-item {
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: inherit;
+}

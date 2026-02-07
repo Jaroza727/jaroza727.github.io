@@ -1,0 +1,136 @@
+.keen-slider__slide {
+  padding: 16px;
+}
+
+.score-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #374151;
+}
+
+.score-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.score-controls button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #374151;
+  color: white;
+  font-size: 18px;
+}
+
+.score-value {
+  min-width: 20px;
+  text-align: center;
+}
+
+.score-slider-wrapper {
+  height: 100%;
+}
+
+.keen-slider {
+  height: 100%;
+}
+
+.score-slide {
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.hole-thumbnails-outer {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Center thumbnails when there is room (desktop) */
+@media (min-width: 768px) {
+  .hole-thumbnails-outer {
+    justify-content: center;
+  }
+}
+
+.hole-thumbnails {
+  display: inline-flex; /* key detail */
+  gap: 8px;
+  padding: 10px 12px;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Hide scrollbar on touch-first devices */
+@media (hover: none) and (pointer: coarse) {
+  .hole-thumbnails {
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* Edge legacy */
+  }
+
+  .hole-thumbnails::-webkit-scrollbar {
+    display: none;                /* Chrome / Safari */
+  }
+}
+
+.hole-thumb {
+  min-width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: none;
+
+  background-color: #374151; /* same family as score buttons */
+  color: #e5e7eb;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.hole-thumb.active {
+  background-color: #1a7eac;
+  font-weight: 600;
+}
+
+.hole-thumb:active {
+  transform: scale(0.94);
+}
+
+.hole-thumb.partial {
+  border: 2px solid #facc15;
+}
+
+.hole-thumb.complete {
+  background-color: #0f7936; /* green */
+  color: white;
+}
+
+.hole-thumb.active.complete {
+  background-color: #22c55e;
+}
+
+.hole-thumbnails::-webkit-scrollbar {
+  display: none;
+}
+
+.hole-thumb:hover {
+  background-color: #4b5563;
+}

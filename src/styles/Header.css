@@ -1,0 +1,45 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: linear-gradient(
+    180deg,
+    #2c313a 0%,
+    #262a32 100%
+  );
+  border-bottom: 1px solid #374151;
+}
+
+.app-header__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-header__icon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.app-header__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #e5e7eb;
+  letter-spacing: 0.3px;
+}
+
+.app-header__subtitle {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.kebab-button {
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.kebab-button:hover {
+  background-color: #374151;
+}
