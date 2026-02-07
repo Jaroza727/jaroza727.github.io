@@ -21,6 +21,11 @@ export default function GameSettingsContent(props : GameSettingsContentProps) {
   const [playerName, setPlayerName] = useState("");
   const [players, setPlayers] = useState<string[]>([]);
 
+  const buildPayload = (): GameSetupData => ({
+    holes,
+    players,
+  });
+
   useEffect(() => {
     if (initialData) {
       setHoles(initialData.holes);
@@ -100,7 +105,7 @@ export default function GameSettingsContent(props : GameSettingsContentProps) {
         {hasActiveGame && (
           <button
             className="secondary-button"
-            onClick={() => onUpdateGame(payload)}
+            onClick={() => onUpdateGame(buildPayload())}
           >
             Update Current Game
           </button>
@@ -109,7 +114,7 @@ export default function GameSettingsContent(props : GameSettingsContentProps) {
         <button
           className="primary-button"
           disabled={players.length === 0}
-          onClick={() => onStartNewGame(payload)}
+          onClick={() => onStartNewGame(buildPayload())}
         >
           Start New Game
         </button>

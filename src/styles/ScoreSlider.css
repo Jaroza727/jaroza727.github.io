@@ -37,16 +37,7 @@
   text-align: center;
 }
 
-.score-slider-wrapper {
-  height: 100%;
-}
-
-.keen-slider {
-  height: 100%;
-}
-
 .score-slide {
-  min-height: 100%;
   box-sizing: border-box;
 }
 
@@ -125,10 +116,6 @@
 
 .hole-thumb.active.complete {
   background-color: #22c55e;
-}
-
-.hole-thumbnails::-webkit-scrollbar {
-  display: none;
 }
 
 .hole-thumb:hover {

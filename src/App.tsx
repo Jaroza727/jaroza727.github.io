@@ -1,56 +1,42 @@
 import { useState } from 'react';
 import Header from './components/Header';
 import Modal from './components/Modal';
-import GameSettingsContent, {GameSetupData} from './components/GameSettingsContent';
+import GameSettingsContent, { GameSetupData } from './components/GameSettingsContent';
 import ScoreSlider from './components/ScoreSlider';
 import { GameScores } from "./types/game";
+import { useScores } from './hooks/useScores';
 import './App.css';
 import "keen-slider/keen-slider.min.css";
+
+const reconcileScores = (
+  prevScores: GameScores,
+  holes: number,
+  players: string[]
+): GameScores =>
+  Array.from({ length: holes }, (_, holeIndex) => {
+    const prevHole = prevScores[holeIndex] ?? {};
+    return Object.fromEntries(
+      players.map((p) => [p, prevHole[p] ?? 0])
+    );
+  });
 
 export default function App() {
   const [gameSetup, setGameSetup] = useState<GameSetupData | null>(null);
   const [isHowToPlayOpen, setIsHowToPlayOpen] = useState(false);
   const [isGameSettingsOpen, setIsGameSettingsOpen] = useState(false);
-  const [scores, setScores] = useState<GameScores>([]);
+
+  const { scores, startNewGame, updateGame, changeScore} = useScores();
 
   const handleStartNewGame = (data: GameSetupData) => {
     setGameSetup(data);
-    setScores(createEmptyScores(data.holes, data.players));
+    startNewGame(data.holes, data.players);
     setIsGameSettingsOpen(false);
   };
 
   const handleUpdateGame = (data: GameSetupData) => {
-  setGameSetup(data);
-
-  setScores((prevScores) => {
-    return Array.from({ length: data.holes }, (_, holeIndex) => {
-      const prevHole = prevScores[holeIndex] ?? {};
-      return Object.fromEntries(
-        data.players.map((p) => [p, prevHole[p] ?? 0])
-      );
-    });
-  });
-
-  setIsGameSettingsOpen(false);
-};
-
-  const createEmptyScores = (holes: number, players: string[]) =>
-  Array.from({ length: holes }, () =>
-    Object.fromEntries(players.map((p) => [p, 0]))
-  )
-
-  const handleScoreChange = (
-    holeIndex: number,
-    player: string,
-    delta: number
-  ) => {
-    setScores((prev) =>
-      prev.map((hole, i) =>
-        i === holeIndex
-          ? { ...hole, [player]: Math.max(0, hole[player] + delta) }
-          : hole
-      )
-    );
+    setGameSetup(data);
+    updateGame(data.holes, data.players);
+    setIsGameSettingsOpen(false);
   };
 
   return (
@@ -93,7 +79,7 @@ export default function App() {
           <ScoreSlider
             players={gameSetup.players}
             scores={scores}
-            onScoreChange={handleScoreChange}
+            onScoreChange={changeScore}
           />
         </main>
       )}
