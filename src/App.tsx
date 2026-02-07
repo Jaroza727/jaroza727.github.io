@@ -62,6 +62,24 @@ export default function App() {
         />
       </Modal>
 
+      {!gameSetup && (
+        <main className="start-screen">
+          <div className="start-card">
+            <p className="start-kicker">Welcome to Disc Golf Dots</p>
+            <h2 className="start-title">Ready to chase some dots?</h2>
+            <p className="start-text">
+              Dots available while supplies last...
+            </p>
+            <button
+              className="primary-button start-button"
+              onClick={() => setIsGameSettingsOpen(true)}
+            >
+              Start a Game
+            </button>
+          </div>
+        </main>
+      )}
+
       {gameSetup && scores.length > 0 && (
         <main>
           <ScoreSlider
