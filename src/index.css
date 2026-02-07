@@ -7,6 +7,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #282c34;
   color: #e5e7eb;
+  min-height: 100vh;
+}
+
+:root {
+  --app-header-height: clamp(52px, 8vh, 64px);
+}
+
+@media (max-height: 736px) {
+  :root {
+    --app-header-height: clamp(48px, 7vh, 56px);
+  }
 }
 
 @media (max-width: 600px) {
@@ -19,9 +30,10 @@ body {
     -moz-osx-font-smoothing: grayscale;
     background-color: #282c34;
     color: #e5e7eb;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
   }
 }
 

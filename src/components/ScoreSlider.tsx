@@ -16,6 +16,7 @@ type ScoreSliderProps = {
         player: string,
         delta: number
     ) => void;
+    onFinishRound: () => void;
 };
 
 export default function ScoreSlider({
@@ -24,7 +25,19 @@ export default function ScoreSlider({
     currentHole,
     onHoleChange,
     onScoreChange,
+    onFinishRound,
 }: ScoreSliderProps) {
+    const totalScores = players.reduce<Record<string, number>>(
+        (acc, player) => {
+            acc[player] = scores.reduce(
+                (sum, hole) => sum + (hole[player] ?? 0),
+                0
+            );
+            return acc;
+        },
+        {}
+    );
+
     const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
         initial: currentHole,
         slides: { perView: 1 },
@@ -42,7 +55,7 @@ export default function ScoreSlider({
         if (!slider) return;
 
         const clamped =
-            Math.min(currentHole, scores.length - 1);
+            Math.min(currentHole, scores.length);
 
         slider.current?.moveToIdx(clamped);
     }, [slider, currentHole, scores.length]);
@@ -50,6 +63,13 @@ export default function ScoreSlider({
     const handleJumpToHole = (index: number) => {
         slider.current?.moveToIdx(index, true, { duration: 0 });
     };
+
+    const sortedTotals = [...players].sort((a, b) => {
+        const diff =
+            (totalScores[b] ?? 0) - (totalScores[a] ?? 0);
+        if (diff !== 0) return diff;
+        return a.localeCompare(b);
+    });
 
     return (
         <div className="score-slider-wrapper">
@@ -64,10 +84,46 @@ export default function ScoreSlider({
                         totalHoles={scores.length}
                         hole={hole}
                         players={players}
+                        totalScores={totalScores}
                         onScoreChange={onScoreChange}
                     />
                 ))}
+                <div className="keen-slider__slide score-slide scoreboard-slide">
+                    <h2>Scoreboard</h2>
+                    <p className="scoreboard-subtitle">
+                        Final totals across all holes
+                    </p>
+                    <ul className="scoreboard-list">
+                        {sortedTotals.map((player, index) => (
+                            <li
+                                key={player}
+                                className={`scoreboard-row scoreboard-row--rank-${index + 1}`}
+                            >
+                                <span className="scoreboard-rank">
+                                    {index + 1}
+                                </span>
+                                <span className="scoreboard-name">
+                                    {player}
+                                </span>
+                                <span className="scoreboard-value">
+                                    {totalScores[player] ?? 0}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
+
+            {currentHole === scores.length && (
+                <div className="score-slider-actions">
+                    <button
+                        className="finish-round-button"
+                        onClick={onFinishRound}
+                    >
+                        Finish Round
+                    </button>
+                </div>
+            )}
 
             <div className="hole-thumbnails-outer">
                 <div className="hole-thumbnails">
@@ -81,6 +137,13 @@ export default function ScoreSlider({
                             onClick={handleJumpToHole}
                         />
                     ))}
+                    <button
+                        className={`hole-thumb hole-thumb--final ${currentHole === scores.length ? "active" : ""}`}
+                        onClick={() => handleJumpToHole(scores.length)}
+                        data-keen-slider-clickable="true"
+                    >
+                        Final
+                    </button>
                 </div>
             </div>
         </div>

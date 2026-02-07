@@ -62,10 +62,15 @@ export function useScores() {
     );
   };
 
+  const resetGame = () => {
+    setScores([]);
+  };
+
   return {
     scores,
     startNewGame,
     updateGame,
     changeScore,
+    resetGame,
   };
 }

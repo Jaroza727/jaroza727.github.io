@@ -12,19 +12,28 @@ export default function App() {
   const [isHowToPlayOpen, setIsHowToPlayOpen] = useState(false);
   const [isGameSettingsOpen, setIsGameSettingsOpen] = useState(false);
   const [currentHole, setCurrentHole] = useState(0);
+  const [isGameActive, setIsGameActive] = useState(false);
 
-  const { scores, startNewGame, updateGame, changeScore} = useScores();
+  const { scores, startNewGame, updateGame, changeScore, resetGame } = useScores();
 
   const handleStartNewGame = (data: GameSetupData) => {
     setGameSetup(data);
     startNewGame(data.holes, data.players);
+    setIsGameActive(true);
     setIsGameSettingsOpen(false);
   };
 
   const handleUpdateGame = (data: GameSetupData) => {
     setGameSetup(data);
     updateGame(data.holes, data.players);
+    setIsGameActive(true);
     setIsGameSettingsOpen(false);
+  };
+
+  const handleFinishRound = () => {
+    resetGame();
+    setCurrentHole(0);
+    setIsGameActive(false);
   };
 
   return (
@@ -62,7 +71,7 @@ export default function App() {
         />
       </Modal>
 
-      {!gameSetup && (
+      {!isGameActive && (
         <main className="start-screen">
           <div className="start-card">
             <p className="start-kicker">Welcome to Disc Golf Dots</p>
@@ -80,7 +89,7 @@ export default function App() {
         </main>
       )}
 
-      {gameSetup && scores.length > 0 && (
+      {gameSetup && isGameActive && scores.length > 0 && (
         <main>
           <ScoreSlider
             key={gameSetup.players.join("|")}
@@ -89,6 +98,7 @@ export default function App() {
             currentHole={currentHole}
             onHoleChange={setCurrentHole}
             onScoreChange={changeScore}
+            onFinishRound={handleFinishRound}
           />
         </main>
       )}

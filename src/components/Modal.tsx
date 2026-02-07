@@ -17,7 +17,7 @@ export default function Modal(props: ModalProps) {
       <div className="modal">
         <h2 className="modal-title">{title}</h2>
 
-        {children}
+        <div className="modal-content">{children}</div>
 
         <div className="modal-actions">
           <button onClick={onClose} className="secondary-button">
